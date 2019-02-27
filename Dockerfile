@@ -1,3 +1,3 @@
 FROM scratch 
-ADD hellodragonboard /
-CMD ["/hellodragonboard"]
+COPY hellodragonboard hellodragonboard
+CMD ["./hellodragonboard"]

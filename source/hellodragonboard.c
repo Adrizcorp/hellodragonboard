@@ -55,12 +55,6 @@ int main(int argc, char *argv[])
 	/*clean up and exit*/
 	gpio_120->in_out = gpio_120->in_out & ~0x02;
 
-	if (munmap(gpio_120, sizeof(int)) == -1)
-	{
-		printf("Failed to unmap GPIO address. Aborting\n");
-		close(fd_mem);
-	}
-
 	printf("Contents of physical address 0x%X is 0x%X\n", GPIO_120_IO_ADDR, gpio_120->in_out);
 
 	close (fd_mem);
