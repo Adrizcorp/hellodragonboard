@@ -1,3 +1,3 @@
-FROM scratch  # this can be a image like adrizcorp/nwtimage:firsttry
+FROM scratch 
 ADD hellodragonboard /
 CMD ["/hellodragonboard"]
