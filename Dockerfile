@@ -1,3 +1,2 @@
-FROM scratch 
-COPY hellodragonboard hellodragonboard
-CMD ["./hellodragonboard"]
+FROM arm64v8/alpine 
+ADD hellodragonboard /
