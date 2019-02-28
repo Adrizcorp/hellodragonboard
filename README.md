@@ -1,6 +1,6 @@
 # hellodragonboard from scratch using Docker
 
-Prints message on console
+the docker container at hand prints a message on console
 "Hello DragonBoard... Blinking Led "
 and blinks LED 10 times
 
