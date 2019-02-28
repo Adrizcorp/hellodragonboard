@@ -5,7 +5,7 @@ Prints message on console
 and blinks LED 10 times
 
 ## build the source code for the binary file
-gcc -static hellodragonboard.c -o hellodragonboard.o -lpthread
+gcc -static hellodragonboard.c -o hellodragonboard -lpthread
 
 ## Pull it on docker:
 
