@@ -1,4 +1,4 @@
-# hellodragonboard
+# hellodragonboard from scratch using Docker
 
 Prints message on console
 "Hello DragonBoard... Blinking Led "
