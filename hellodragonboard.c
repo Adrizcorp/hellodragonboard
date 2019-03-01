@@ -7,58 +7,47 @@
 #include <sys/types.h>
 #include <sys/mman.h>
 
+#define LED_GPIO 120
+#define NUM_BLINKS 10
+#define LED_CFG_BASE 0x01000000 + (0x1000 * LED_GPIO)
+#define LED_STATUS_OFFSET 0x4
 
-typedef struct
-{
-	unsigned int cfg;            /*place holder for configuration register*/
-	unsigned int in_out;				 /*place holder for IO register*/
-}db_gpio_type_s;
-
-int abort_program = 0;
-#define GPIO_n 120
-/*GPIOn physical address = 0x01000004 + (0x1000 * n); ref: e peripherals programming guide*/
-unsigned int GPIO_120_CFG_ADDR = 0x01000000 + (0x1000 * GPIO_n);
-unsigned int GPIO_120_IO_ADDR = 0x01000004 + (0x1000 * GPIO_n);
-
-
-int main(int argc, char *argv[])
-{
-
-	db_gpio_type_s *gpio_120;
+int main(int argc, char** argv){
+	int n_blinks;
 	int fd_mem;
-
+	void *leds_base;
+	unsigned int *led_cfg;
+	unsigned int *led_status;
+	
+	//getting argument
+	if(argc>1){
+		sscanf(argv[1],"%d",&n_blinks);
+	}else{
+		return 0;
+	}
+	//open mem to access physical mem
 	fd_mem = open("/dev/mem", O_RDWR | O_SYNC);
-
-	if (fd_mem < 0)
-	{
-		printf("Failed to open /dev/mem. Aborting\n");
-	}
-
-	gpio_120 = (db_gpio_type_s *)(mmap(0, sizeof(db_gpio_type_s), PROT_READ | PROT_WRITE, MAP_SHARED, fd_mem, GPIO_120_CFG_ADDR));
-
-	if (gpio_120 == (void *)-1)
-	{
-		printf("Failed to map GPIO address. Aborting\n");
-		close(fd_mem);
-	}
-    
-	printf("Hello DragonBoard... Blinking Led\n");
-	int counter=10;
-    while(counter>0){
-		gpio_120->in_out = gpio_120->in_out | 0x02;
-		usleep(500000);
-		gpio_120->in_out = gpio_120->in_out & ~0x02;
-		usleep(500000);
-		counter--;
+	//aiming to the physical address with offset
+	leds_base = mmap(NULL, 32, PROT_READ | PROT_WRITE, MAP_SHARED, fd_mem, LED_CFG_BASE);
+	//set base of led for configuration
+	led_cfg=leds_base;
+	//set base of led for status
+	led_status=leds_base+LED_STATUS_OFFSET;
+	
+	printf("Hello\n");
+	printf("Blink times=%d\n",n_blinks);
+	
+	//Enable output enable.
+	*led_cfg|=(1<<9);
+	//Blink on board LED
+	while(n_blinks>0){
+		* led_status=* led_status ^ 0x02;//toggle led
+		usleep(100000);
+		n_blinks--;
 	}
 	
-	/*clean up and exit*/
-	gpio_120->in_out = gpio_120->in_out & ~0x02;
-
-	printf("Contents of physical address 0x%X is 0x%X\n", GPIO_120_IO_ADDR, gpio_120->in_out);
-
-	close (fd_mem);
-	printf("\nProgram exiting\n");
+	
+	
 	return 0;
 }
 
